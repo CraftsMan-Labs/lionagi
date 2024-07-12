@@ -4,23 +4,12 @@ from lionagi.libs.ln_api import BaseService, PayloadPackage
 
 allowed_kwargs = [
     "model",
-    "frequency_penalty",
-    "n",
-    "presence_penalty",
-    "response_format",
     "temperature",
-    "top_p",
-    "seed",
-    "stop",
-    "stream",
-    "stream_options",
-    "tools",
-    "tool_choice",
-    "user",
     "max_tokens",
-    "logprobs",
-    "top_logprobs",
-    "logit_bias",
+    "top_p",
+    "stream",
+    "stop",
+    "seed"
 ]
 
 class GroqService(BaseService):
