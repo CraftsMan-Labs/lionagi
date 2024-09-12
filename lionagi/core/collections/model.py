@@ -26,6 +26,8 @@ load_dotenv()
 
 _oai_price_map = {
     "gpt-4o": (5, 15),
+    "gpt-4o-2024-08-06": (2.5, 10),
+    "gpt-4o-mini": (0.15, 0.6),
     "gpt-4-turbo": (10, 30),
     "gpt-3.5-turbo": (0.5, 1.5),
 }
@@ -321,6 +323,38 @@ class iModel:
         payload.pop("input")
         node.add_field("embedding", embed["data"][0]["embedding"])
         node._meta_insert("embedding_meta", payload)
+
+    async def format_structure(
+        self,
+        data: str | dict,
+        json_schema: dict | str = None,
+        request_fields: dict | list = None,
+        **kwargs,
+    ) -> dict:
+        if json_schema:
+            kwargs["response_format"] = {
+                "type": "json_schema",
+                "json_schema": json_schema,
+            }
+            kwargs["model"] = kwargs.pop("model", "gpt-4o-mini")
+        if not request_fields and not json_schema:
+            raise ValueError("Either request_fields or json_schema must be provided")
+        request_fields = request_fields or json_schema["properties"]
+
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a helpful json formatting assistant.",
+            },
+            {
+                "role": "user",
+                "content": f"can you please format the given data into given json schema?"
+                f"--- data --- {data} |||| ----json fields required --- {request_fields}",
+            },
+        ]
+
+        result = await self.call_chat_completion(messages, **kwargs)
+        return result["choices"][0]["message"]["content"]
 
     def to_dict(self):
         """
