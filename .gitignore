@@ -1,4 +1,5 @@
-.mypy_cache# Byte-compiled / optimized / DLL files
+.mypy_cache
+.aider*
 __pycache__/
 *.py[cod]
 *$py.class
